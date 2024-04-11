@@ -17,21 +17,21 @@ interface DoughnutChartProps {
     score: number;
 }
 
-// const centerTextPlugin: Plugin = {
-//     id: 'centerText',
-//     beforeDatasetsDraw: (chart) => {
-//       const { ctx } = chart;
-
-//       ctx.save();
-//       const xPos = chart.getDatasetMeta(0).data[0].x;
-//       const yPos = chart.getDatasetMeta(0).data[0].y;
-//       ctx.font = 'bold 30px sans-serif';
-//       ctx.fillStyle = '#333';
-//       ctx.textAlign = 'center';
-//       const centerText = (chart.config.data as any).centerText;
-//       ctx.fillText("700/900", xPos, yPos);
-//     },
-//   };
+const centerTextPlugin = (score: number): Plugin => ({
+    id: 'centerText',
+    beforeDatasetsDraw: (chart) => {
+      const { ctx } = chart;
+      ctx.save();
+      const xPos = chart.getDatasetMeta(0).data[0].x;
+      const yPos = chart.getDatasetMeta(0).data[0].y;
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${score}`, xPos, yPos);
+      ctx.restore();
+    },
+  });
+  
 
 function DoughnutChart({ score }: DoughnutChartProps) {
     const remainingScore = 900 - score;
@@ -46,7 +46,7 @@ function DoughnutChart({ score }: DoughnutChartProps) {
             borderWidth: 1,
           },
         ],
-        // centerText: `${score}`,
+        centerText: `${score}`,
       };
     
       const options = {
@@ -76,7 +76,7 @@ function DoughnutChart({ score }: DoughnutChartProps) {
         maintainAspectRatio: false,
       };
 
-      // Chart.register(centerTextPlugin);
+      Chart.register(centerTextPlugin(score));
     
       return <Doughnut data={data} options={options} />;
 }
