@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { CardSignUp } from "@/app/signup/components/card-signup";
 // import { Logo } from '@/components/ui/logo';
 import { useEffect } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function SignUp() {
   useEffect(() => {
@@ -52,18 +52,21 @@ export default function SignUp() {
           <AnimatePresence>
             <motion.div
               className="absolute inset-0 bg-secondary flex items-center justify-center"
-              initial={{ x: '-100%' }}
+              initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
             >
-              <Image src={"/images/logo.svg"} width={400} height={400} alt="Logo" />
+              <Image
+                src={"/images/logo.svg"}
+                width={400}
+                height={400}
+                alt="Logo"
+              />
             </motion.div>
           </AnimatePresence>
           <div className="relative z-20 flex items-center font-medium">
-            <h1 className="text-primary text-2xl font-eb-garamond">
-              Fintune
-            </h1>
+            <h1 className="text-primary text-2xl font-eb-garamond">Fintune</h1>
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2">

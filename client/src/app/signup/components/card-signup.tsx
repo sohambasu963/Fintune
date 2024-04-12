@@ -56,7 +56,7 @@ export function CardSignUp({ className, ...props }: UserAuthFormProps) {
   const handleGoogleSignUp = async (
     e:
       | React.FormEvent<HTMLFormElement>
-      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
 
