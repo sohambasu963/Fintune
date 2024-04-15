@@ -5,27 +5,9 @@ import Tooltip from "@/components/tooltip";
 import FormField from "./components/FormField";
 import { db } from "@/firebase/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-const auth = getAuth();
-
-const useCurrentUserId = () => {
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        setUserId(null);
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return userId;
-};
+import withAuth from "@/components/withAuth";
+import getCurrentUserId from "@/utils/getUser";
+import { useRouter } from "next/navigation";
 
 function ProfessionalKYCForm() {
   const [formData, setFormData] = useState({
@@ -45,7 +27,8 @@ function ProfessionalKYCForm() {
     }));
   };
 
-  const userId = useCurrentUserId();
+  const userId = getCurrentUserId();
+  const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -61,6 +44,7 @@ function ProfessionalKYCForm() {
       );
 
       alert("Financial Information Submitted!");
+      router.push("/");
     } else {
       console.error("User ID is null");
     }
@@ -174,7 +158,8 @@ function StudentKYCForm() {
     }));
   };
 
-  const userId = useCurrentUserId();
+  const userId = getCurrentUserId();
+  const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -190,6 +175,7 @@ function StudentKYCForm() {
       );
 
       alert("Financial Information Submitted!");
+      router.push("/");
     } else {
       console.error("User ID is null");
     }
@@ -319,12 +305,30 @@ function StudentKYCForm() {
   );
 }
 
-export default function KYCPage() {
+function KYCPage() {
   const [userType, setUserType] = useState("");
 
   const handleSelection = (type: "student" | "professional") => {
     setUserType(type);
   };
+
+  const userId = getCurrentUserId();
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        const userRef = doc(db, "users", userId);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists() && docSnap.data().userType) {
+          router.push("/");
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [userId, router]);
 
   return (
     <div className="bg-primary min-h-screen">
@@ -354,3 +358,5 @@ export default function KYCPage() {
     </div>
   );
 }
+
+export default withAuth(KYCPage);
