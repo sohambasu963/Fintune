@@ -10,7 +10,6 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 
 function Home() {
-  const [userType, setUserType] = useState("");
   const userId = getCurrentUserId();
   const router = useRouter();
   // const { user, loading } = UserAuth();
@@ -29,9 +28,7 @@ function Home() {
 
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          if (userData.userType) {
-            setUserType(userData.userType);
-          } else {
+          if (!userData.userType) {
             router.push("/kyc");
           }
         } else {
@@ -58,7 +55,6 @@ function Home() {
     <div className="bg-primary min-h-screen">
       <Topbar />
       <div className="flex justify-center items-cente mt-5">
-        <h1>{userType === "professional" ? "Professional" : "Student"}</h1>
         <FinancialHealthScore score={financialScore} />
       </div>
     </div>
