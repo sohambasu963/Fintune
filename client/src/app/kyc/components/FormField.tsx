@@ -24,7 +24,7 @@ export default function FormField({
         <Tooltip content={tooltip} />
       </div>
       <input
-        type="number"
+        type="text"
         id={name}
         name={name}
         value={value}

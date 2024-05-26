@@ -8,6 +8,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import withAuth from "@/components/withAuth";
 import getCurrentUserId from "@/utils/getUser";
 import { useRouter } from "next/navigation";
+import BalanceChart from "./components/BalanceChart";
 
 function KYCForm() {
   const [step, setStep] = useState(1);
@@ -20,19 +21,33 @@ function KYCForm() {
     setStep((prevStep) => prevStep + 1);
   };
 
-  const [formData, setFormData] = useState(() => {
-    const savedFormData = localStorage.getItem("kycFormData");
-    return savedFormData
-      ? JSON.parse(savedFormData)
-      : {
-          monthlyIncome: "",
-          liquidAssets: "",
-          nonLiquidAssets: "",
-          monthlyExpenses: "",
-          studentDebt: "",
-          otherDebt: "",
-        };
+  const [formData, setFormData] = useState({
+    monthlyIncome: "",
+    liquidAssets: "",
+    nonLiquidAssets: "",
+    monthlyExpenses: "",
+    studentDebt: "",
+    otherDebt: "",
   });
+
+  useEffect(() => {
+    const savedFormData = localStorage.getItem("kycFormData");
+    setFormData(savedFormData ? JSON.parse(savedFormData) : {
+      monthlyIncome: "",
+      liquidAssets: "",
+      nonLiquidAssets: "",
+      monthlyExpenses: "",
+      studentDebt: "",
+      otherDebt: "",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (formData) {
+      localStorage.setItem("kycFormData", JSON.stringify(formData));
+    }
+  }, [formData]);
+
 
   useEffect(() => {
     localStorage.setItem("kycFormData", JSON.stringify(formData));
@@ -70,15 +85,16 @@ function KYCForm() {
 
   return (
     <div
-      className="bg-white p-10 rounded-lg shadow-lg mx-auto my-10"
+      className="bg-offwhite p-10 rounded-lg shadow-lg mx-auto my-10"
       style={{ width: "1000px", boxShadow: "0px 0px 8px rgba(0,0,0,0.1)" }}
     >
-      <h1 className="text-4xl mb-12 text-center">Financial Health Profile</h1>
+      <h1 className="text-4xl mb-12 text-center font-tiempos">Financial Health Profile</h1>
+      {formData && (
       <form onSubmit={handleSubmit} className="space-y-8">
         {step === 1 && (
           <>
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Income & Expenses</h2>
+              <h2 className="text-2xl font-semibold font-dm mb-4">Income & Expenses</h2>
               <div className="flex space-x-6">
                 <div className="w-1/2">
                   <FormField
@@ -102,7 +118,7 @@ function KYCForm() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Savings & Assets</h2>
+              <h2 className="text-2xl font-semibold font-dm mb-4">Savings & Assets</h2>
               <div className="flex space-x-6">
                 <div className="w-1/2">
                   <FormField
@@ -126,7 +142,7 @@ function KYCForm() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Debt</h2>
+              <h2 className="text-2xl font-semibold font-dm mb-4">Debt</h2>
               <div className="flex space-x-6">
                 <div className="w-1/2">
                   <FormField
@@ -182,7 +198,16 @@ function KYCForm() {
             </button>
           </div>
         )}
+
+        {step === 2 && (
+          <div>
+            <BalanceChart
+              formData={formData}
+            />
+          </div>
+        )}
       </form>
+      )}
     </div>
   );
 }

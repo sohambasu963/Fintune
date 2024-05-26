@@ -22,9 +22,16 @@ const config = {
         primary: {
           DEFAULT: "#FBF8EF",
         },
+        offwhite: {
+          DEFAULT: "#F7F7F7",
+        },
         secondary: {
           DEFAULT: "#2A7A3F",
         },
+      },
+      fontFamily: {
+        tiempos: ["Tiempos Headline", "serif"],
+        dm: ["DM Sans", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
