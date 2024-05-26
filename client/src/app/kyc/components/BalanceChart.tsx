@@ -5,7 +5,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-
 export default function BalanceChart({ formData }: any) {
     const generateMonths = () => {
         const months = [];
@@ -22,10 +21,22 @@ export default function BalanceChart({ formData }: any) {
     const generateBalances = () => {
         const balances = [];
         let currentBalance = Number(formData.liquidAssets);
-        console.log(formData.liquidAssets)
+        const adjustments = formData.oneTimeAdjustments;
+
         for (let i = 0; i < 24; i++) {
             balances.push(currentBalance);
             currentBalance += Number(formData.monthlyIncome) - Number(formData.monthlyExpenses);
+
+            adjustments.forEach((adjustment: any) => {
+                const adjustmentDate = new Date(adjustment.date);
+                const adjustmentMonthIndex = adjustmentDate.getFullYear() * 12 + adjustmentDate.getMonth();
+                const currentMonthIndex = new Date().getFullYear() * 12 + new Date().getMonth() + i;
+            
+                if (currentMonthIndex === adjustmentMonthIndex - 1) {
+                    currentBalance += adjustment.type === 'income' ? Number(adjustment.amount) : -Number(adjustment.amount);
+                }
+            });
+            
         }
         return balances;
     };
@@ -35,10 +46,21 @@ export default function BalanceChart({ formData }: any) {
         const totalDebt = Number(formData.studentDebt) + Number(formData.otherDebt);
         const monthlyDebtReduction = totalDebt / 24;
         let currentNetWorth = Number(formData.liquidAssets) + Number(formData.nonLiquidAssets) - totalDebt;
+        const adjustments = formData.oneTimeAdjustments;
 
         for (let i = 0; i < 24; i++) {
             netWorths.push(currentNetWorth);
-            currentNetWorth += formData.monthlyIncome - formData.monthlyExpenses + monthlyDebtReduction;
+            currentNetWorth += Number(formData.monthlyIncome) - Number(formData.monthlyExpenses) + monthlyDebtReduction;
+
+            adjustments.forEach((adjustment: any) => {
+                const adjustmentDate = new Date(adjustment.date);
+                const adjustmentMonthIndex = adjustmentDate.getFullYear() * 12 + adjustmentDate.getMonth();
+                const currentMonthIndex = new Date().getFullYear() * 12 + new Date().getMonth() + i;
+
+                if (currentMonthIndex === adjustmentMonthIndex - 1) {
+                    currentNetWorth += adjustment.type === 'income' ? Number(adjustment.amount) : -Number(adjustment.amount);
+                }
+            });
         }
         return netWorths;
     };
@@ -89,7 +111,6 @@ export default function BalanceChart({ formData }: any) {
 
     return (
         <div>
-            <h1>Expected Cash Balance and Net Worth</h1>
             <Line data={data} options={options} />
         </div>
     );
