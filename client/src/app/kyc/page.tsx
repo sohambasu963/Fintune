@@ -281,7 +281,7 @@ function KYCForm() {
                 <button
                   type="button"
                   onClick={handlePrevStep}
-                  className="bg-secondary text-primary px-4 py-2 rounded"
+                  className="bg-[#DC3454] text-primary px-4 py-2 rounded"
                 >
                   Previous
                 </button>

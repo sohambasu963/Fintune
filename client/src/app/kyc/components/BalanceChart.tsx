@@ -41,29 +41,46 @@ export default function BalanceChart({ formData }: any) {
         return balances;
     };
 
+
     const generateNetWorths = () => {
         const netWorths = [];
-        const totalDebt = Number(formData.studentDebt) + Number(formData.otherDebt);
-        const monthlyDebtReduction = totalDebt / 24;
+        let studentDebt = Number(formData.studentDebt);
+        let otherDebt = Number(formData.otherDebt);
+        const totalDebt = studentDebt + otherDebt;
+        const debtReductionRate = 0.3;
         let currentNetWorth = Number(formData.liquidAssets) + Number(formData.nonLiquidAssets) - totalDebt;
         const adjustments = formData.oneTimeAdjustments;
-
+    
         for (let i = 0; i < 24; i++) {
             netWorths.push(currentNetWorth);
-            currentNetWorth += Number(formData.monthlyIncome) - Number(formData.monthlyExpenses) + monthlyDebtReduction;
-
+    
+            const monthlyIncome = Number(formData.monthlyIncome);
+            const monthlyExpenses = Number(formData.monthlyExpenses);
+            const monthlySavings = monthlyIncome - monthlyExpenses;
+            const debtReduction = monthlySavings * debtReductionRate;
+    
+            if (studentDebt + otherDebt > 0) {
+                const totalDebt = studentDebt + otherDebt;
+                studentDebt -= (debtReduction * (studentDebt / totalDebt));
+                otherDebt -= (debtReduction * (otherDebt / totalDebt));
+            }
+    
+            currentNetWorth += (monthlySavings - debtReduction);
+    
             adjustments.forEach((adjustment: any) => {
                 const adjustmentDate = new Date(adjustment.date);
                 const adjustmentMonthIndex = adjustmentDate.getFullYear() * 12 + adjustmentDate.getMonth();
                 const currentMonthIndex = new Date().getFullYear() * 12 + new Date().getMonth() + i;
-
+    
                 if (currentMonthIndex === adjustmentMonthIndex - 1) {
                     currentNetWorth += adjustment.type === 'income' ? Number(adjustment.amount) : -Number(adjustment.amount);
                 }
             });
         }
+    
         return netWorths;
     };
+
 
     const data = {
         labels: generateMonths(),
